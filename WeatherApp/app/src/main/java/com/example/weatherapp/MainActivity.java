@@ -1,14 +1,20 @@
 package com.example.weatherapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import android.Manifest;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,25 +22,36 @@ import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
     String CITY = "Hanoi";
     String API = "b2e0f0cec21b094b6dceec04403dedd8";
+    private LocationManager locationManager;
+    private int PERMISSION_CODE = 1;
+    Location location;
 
     TextView addressTxt, updated_atTxt, statusTxt, tempTxt, temp_minTxt, temp_maxTxt, sunriseTxt,
             sunsetTxt, windTxt, pressureTxt, humidityTxt, visibilityTxt;
+
+    TextView[] forecast = new TextView[5];
+    TextView[] forecastTemp=new TextView[5];
+    ImageView[] forecastIcons=new ImageView[5];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.NavigationView);
         NavController navController = Navigation.findNavController(this, R.id.navHostFragment);
         NavigationUI.setupWithNavController(navigationView, navController);
-        /*addressTxt = findViewById(R.id.address);
+        addressTxt = findViewById(R.id.address);
         //updated_atTxt = findViewById(R.id.updated_at);
         statusTxt = findViewById(R.id.status);
         tempTxt = findViewById(R.id.temp);
@@ -64,9 +81,18 @@ public class MainActivity extends AppCompatActivity {
         windTxt = findViewById(R.id.wind);
         pressureTxt = findViewById(R.id.pressure);
         humidityTxt = findViewById(R.id.humidity);
-        visibilityTxt = findViewById(R.id.visibility);*/
+        visibilityTxt = findViewById(R.id.visibility);
+        IdAssign(forecast,forecastTemp,forecastIcons);
 
-        //new weatherTask().execute();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_CODE);
+        }
+
+        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        new weatherTask().execute();
 
     }
     public boolean onOptionsItemSelected(MenuItem item)
@@ -80,20 +106,68 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+    private void IdAssign(TextView[] forecast,TextView[] forecastTemp,ImageView[] forecastIcons){
+        forecast[0]=findViewById(R.id.id_forecastDay1);
+        forecast[1]=findViewById(R.id.id_forecastDay2);
+        forecast[2]=findViewById(R.id.id_forecastDay3);
+        forecast[3]=findViewById(R.id.id_forecastDay4);
+        forecast[4]=findViewById(R.id.id_forecastDay5);
+        forecastTemp[0]=findViewById(R.id.id_forecastTemp1);
+        forecastTemp[1]=findViewById(R.id.id_forecastTemp2);
+        forecastTemp[2]=findViewById(R.id.id_forecastTemp3);
+        forecastTemp[3]=findViewById(R.id.id_forecastTemp4);
+        forecastTemp[4]=findViewById(R.id.id_forecastTemp5);
+        forecastIcons[0]=findViewById(R.id.id_forecastIcon1);
+        forecastIcons[1]=findViewById(R.id.id_forecastIcon2);
+        forecastIcons[2]=findViewById(R.id.id_forecastIcon3);
+        forecastIcons[3]=findViewById(R.id.id_forecastIcon4);
+        forecastIcons[4]=findViewById(R.id.id_forecastIcon5);
 
-    /*class weatherTask extends AsyncTask<String, Void, String> {
+    }
+    private void setDataImage(final ImageView ImageView, final String value){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (value){
+                    case "01d": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w01d)); break;
+                    case "01n": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w01d)); break;
+                    case "02d": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w02d)); break;
+                    case "02n": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w02d)); break;
+                    case "03d": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w03d)); break;
+                    case "03n": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w03d)); break;
+                    case "04d": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w04d)); break;
+                    case "04n": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w04d)); break;
+                    case "09d": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w09d)); break;
+                    case "09n": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w09d)); break;
+                    case "10d": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w10d)); break;
+                    case "10n": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w10d)); break;
+                    case "11d": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w11d)); break;
+                    case "11n": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w11d)); break;
+                    case "13d": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w13d)); break;
+                    case "13n": ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w13d)); break;
+                    default:ImageView.setImageDrawable(getResources().getDrawable(R.drawable.w03d));
+
+                }
+            }
+        });
+    }
+
+    class weatherTask extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
-            *//* Showing the ProgressBar, Making the main design GONE *//*
             findViewById(R.id.loader).setVisibility(View.VISIBLE);
             findViewById(R.id.mainContainer).setVisibility(View.GONE);
             findViewById(R.id.errorText).setVisibility(View.GONE);
         }
 
         protected String doInBackground(String... args) {
-            String response = HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/weather?q=" + CITY + "&units=metric&appid=" + API);
+            String response = HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/onecall?lat=" + 21.0245 + "&lon=" + 105.8412 + "&units=metric&appid=" + API);
+            if(response == null) {Log.e("response", "không có giá trị");}
+            else{
+                Log.e("response",response);
+            }
             return response;
         }
 
@@ -103,30 +177,35 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 JSONObject jsonObj = new JSONObject(result);
-                JSONObject main = jsonObj.getJSONObject("main");
-                JSONObject sys = jsonObj.getJSONObject("sys");
-                JSONObject wind = jsonObj.getJSONObject("wind");
-                JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
+                JSONObject current = jsonObj.getJSONObject("current");
+
+//                JSONArray hourly = jsonObj.getJSONArray("hourly");
+                JSONArray daily = jsonObj.getJSONArray("daily");
+                JSONObject tempp = daily.getJSONObject(0).getJSONObject("temp");
+                JSONObject weather = daily.getJSONObject(0).getJSONArray("weather").getJSONObject(0);
+                //Long updatedAt = jsonObj.getLong("dt");
+                //String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000));*/
+                String humidity = current.getString("humidity");
+                String dewPoint = current.getString("dew_point");
+                String UV = current.getString("uvi");
+                String visibility = current.getInt("visibility") / 1000 + "km";
 
 //                Long updatedAt = jsonObj.getLong("dt");
 //                String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000));
-                String temp = main.getString("temp") + "°C";
-                String tempMin = "Min Temp: " + main.getString("temp_min") + "°C";
-                String tempMax = "Max Temp: " + main.getString("temp_max") + "°C";
-                String pressure = main.getString("pressure");
-                String humidity = main.getString("humidity");
-                String visibility = jsonObj.getInt("visibility") / 1000 + "km";
+                String temp = current.getString("temp") + "°C";
+                String tempMin = "Min Temp: " + tempp.getString("min") + "°C";
+                String tempMax = "Max Temp: " + tempp.getString("max") + "°C";
+                String pressure = current.getString("pressure");
 
-                Long sunrise = sys.getLong("sunrise");
-                Long sunset = sys.getLong("sunset");
-                String windSpeed = wind.getString("speed");
+                Long sunrise = current.getLong("sunrise");
+                Long sunset = current.getLong("sunset");
+                String windSpeed = current.getString("wind_speed");
                 String weatherDescription = weather.getString("description");
 
-                String address = jsonObj.getString("name") + ", " + sys.getString("country");
+//                String address = jsonObj.getString("name") + ", " + .getString("country");
 
 
-                *//* Populating extracted data into our views *//*
-                addressTxt.setText(address);
+//                addressTxt.setText(address);
 //                updated_atTxt.setText(updatedAtText);
                 statusTxt.setText(weatherDescription.toUpperCase());
                 tempTxt.setText(temp);
@@ -138,7 +217,27 @@ public class MainActivity extends AppCompatActivity {
                 pressureTxt.setText(pressure);
                 humidityTxt.setText(humidity);
                 visibilityTxt.setText(visibility);
-                *//* Views populated, Hiding the loader, Showing the main design *//*
+
+                for (int i = 0; i < 5; i++) {
+                    Long dt_text = daily.getJSONObject(i+1).getLong("dt");
+                    String dt = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date(dt_text * 1000));
+                    String[] dateSplit = dt.split("-");
+                    Calendar calendar=new GregorianCalendar(Integer.parseInt(dateSplit[0]),Integer.parseInt(dateSplit[1])-1,Integer.parseInt(dateSplit[2]));
+                    Date forecastDate=calendar.getTime();
+                    String dateString=forecastDate.toString();
+                    String[] forecastDateSplit=dateString.split(" ");
+                    String date=forecastDateSplit[0]+", "+forecastDateSplit[1] +" "+forecastDateSplit[2];
+                    forecast[i].setText(date);
+
+                    JSONObject tem = daily.getJSONObject(i+1).getJSONObject("temp");
+                    String temm = tem.getString("min") + "° - " + tem.getString("max") + "°";
+                    forecastTemp[i].setText(temm);
+
+                    JSONObject weatherr = daily.getJSONObject(i+1).getJSONArray("weather").getJSONObject(0);
+                    String icon = weatherr.getString("icon");
+                    setDataImage(forecastIcons[i], icon);
+                }
+
                 findViewById(R.id.loader).setVisibility(View.GONE);
                 findViewById(R.id.mainContainer).setVisibility(View.VISIBLE);
 
@@ -150,5 +249,5 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-    */
+
 }
