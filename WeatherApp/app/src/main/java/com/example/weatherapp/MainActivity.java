@@ -1,12 +1,25 @@
 package com.example.weatherapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
+import android.content.ClipData;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +41,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        addressTxt = findViewById(R.id.address);
+        DrawerLayout drawerLayout = findViewById(R.id.drawLayout);
+        findViewById(R.id.imageMenu).setOnClickListener((view) -> {
+            drawerLayout.openDrawer(GravityCompat.START);
+        });
+        if(findViewById(R.id.addPlace) == null ){
+            Log.e("item","không tồn tại");
+        }else{
+            Log.e("item","cố tồn tại");
+        }
+        NavigationView navigationView = findViewById(R.id.NavigationView);
+        NavController navController = Navigation.findNavController(this, R.id.navHostFragment);
+        NavigationUI.setupWithNavController(navigationView, navController);
+        /*addressTxt = findViewById(R.id.address);
         //updated_atTxt = findViewById(R.id.updated_at);
         statusTxt = findViewById(R.id.status);
         tempTxt = findViewById(R.id.temp);
@@ -39,19 +64,29 @@ public class MainActivity extends AppCompatActivity {
         windTxt = findViewById(R.id.wind);
         pressureTxt = findViewById(R.id.pressure);
         humidityTxt = findViewById(R.id.humidity);
-        visibilityTxt = findViewById(R.id.visibility);
+        visibilityTxt = findViewById(R.id.visibility);*/
 
-        new weatherTask().execute();
+        //new weatherTask().execute();
 
     }
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        Log.e("item","item");
+        switch (item.getItemId())
+        {
+            case R.id.addPlace:
+                Toast.makeText(this,"click",Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-
-    class weatherTask extends AsyncTask<String, Void, String> {
+    /*class weatherTask extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
-            /* Showing the ProgressBar, Making the main design GONE */
+            *//* Showing the ProgressBar, Making the main design GONE *//*
             findViewById(R.id.loader).setVisibility(View.VISIBLE);
             findViewById(R.id.mainContainer).setVisibility(View.GONE);
             findViewById(R.id.errorText).setVisibility(View.GONE);
@@ -90,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 String address = jsonObj.getString("name") + ", " + sys.getString("country");
 
 
-                /* Populating extracted data into our views */
+                *//* Populating extracted data into our views *//*
                 addressTxt.setText(address);
 //                updated_atTxt.setText(updatedAtText);
                 statusTxt.setText(weatherDescription.toUpperCase());
@@ -103,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 pressureTxt.setText(pressure);
                 humidityTxt.setText(humidity);
                 visibilityTxt.setText(visibility);
-                /* Views populated, Hiding the loader, Showing the main design */
+                *//* Views populated, Hiding the loader, Showing the main design *//*
                 findViewById(R.id.loader).setVisibility(View.GONE);
                 findViewById(R.id.mainContainer).setVisibility(View.VISIBLE);
 
@@ -115,4 +150,5 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+    */
 }

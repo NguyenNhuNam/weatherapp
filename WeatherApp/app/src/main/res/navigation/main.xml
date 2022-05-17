@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    app:startDestination="@id/twoFragment">
+
+    <fragment
+        android:id="@+id/addPlace"
+        android:name="com.example.weatherapp.AddPlaceFragment"
+        android:label="ThemViTri"
+        tools:layout="@layout/fragment_add_place" />
+    <fragment
+        android:id="@+id/twoFragment"
+        android:name="com.example.weatherapp.TwoFragment"
+        android:label="fragment_two"
+        tools:layout="@layout/fragment_two" />
+</navigation>
