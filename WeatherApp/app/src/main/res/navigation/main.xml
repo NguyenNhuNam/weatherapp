@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    app:startDestination="@id/twoFragment">
+    app:startDestination="@id/weather">
 
     <fragment
         android:id="@+id/addPlace"
@@ -15,4 +15,9 @@
         android:name="com.example.weatherapp.TwoFragment"
         android:label="fragment_two"
         tools:layout="@layout/fragment_two" />
+    <fragment
+        android:id="@+id/weather"
+        android:name="com.example.weatherapp.Weather"
+        android:label="fragment_weather"
+        tools:layout="@layout/fragment_weather" />
 </navigation>

@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,11 +63,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.imageMenu).setOnClickListener((view) -> {
             drawerLayout.openDrawer(GravityCompat.START);
         });
-        if(findViewById(R.id.addPlace) == null ){
-            Log.e("item","không tồn tại");
-        }else{
-            Log.e("item","cố tồn tại");
-        }
         NavigationView navigationView = findViewById(R.id.NavigationView);
         NavController navController = Navigation.findNavController(this, R.id.navHostFragment);
         NavigationUI.setupWithNavController(navigationView, navController);
@@ -94,17 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
         new weatherTask().execute();
 
-    }
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        Log.e("item","item");
-        switch (item.getItemId())
-        {
-            case R.id.addPlace:
-                Toast.makeText(this,"click",Toast.LENGTH_SHORT).show();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
     private void IdAssign(TextView[] forecast,TextView[] forecastTemp,ImageView[] forecastIcons){
         forecast[0]=findViewById(R.id.id_forecastDay1);

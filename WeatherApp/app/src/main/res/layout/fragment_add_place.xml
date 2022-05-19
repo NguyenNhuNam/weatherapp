@@ -6,10 +6,37 @@
     tools:context=".AddPlaceFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello World"
-        android:textColor="@color/white"/>
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+       <TextView
+           android:layout_marginTop="20dp"
+           android:id="@+id/InputCity"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Thêm vị trí:"
+           android:textColor="@color/white"
+           android:textSize="30sp"/>
+       <EditText
+           android:layout_below="@id/InputCity"
+           android:id="@+id/text3"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:inputType="text"
+           android:textColor="@color/white" />
+
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_below="@id/text3"
+           android:gravity="center_horizontal">
+           <Button
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="Ok" />
+       </RelativeLayout>
+
+   </RelativeLayout>
+
 
 </FrameLayout>

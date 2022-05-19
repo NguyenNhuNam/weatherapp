@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Weather App</string>
-    <string name="item1">ThemViTri</string>
-    <string name="item2">Widless</string>
+    <string name="item1">Thêm vị trí</string>
+    <string name="item2">Widget Thời tiết</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment"></string>
+    <string name="hello_blank_fragment">hello_blank_fragment</string>
 </resources>
