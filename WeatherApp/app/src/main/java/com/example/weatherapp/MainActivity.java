@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,20 +40,20 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LocationListener{
 
     String CITY = "Hanoi";
     String API = "b2e0f0cec21b094b6dceec04403dedd8";
     private LocationManager locationManager;
     private int PERMISSION_CODE = 1;
-    Location location;
+    Double lat, lon;
 
     TextView addressTxt, updated_atTxt, statusTxt, tempTxt, temp_minTxt, temp_maxTxt, sunriseTxt,
             sunsetTxt, windTxt, pressureTxt, humidityTxt, visibilityTxt;
 
     TextView[] forecast = new TextView[5];
-    TextView[] forecastTemp=new TextView[5];
-    ImageView[] forecastIcons=new ImageView[5];
+    TextView[] forecastTemp = new TextView[5];
+    ImageView[] forecastIcons = new ImageView[5];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,17 +79,40 @@ public class MainActivity extends AppCompatActivity {
         pressureTxt = findViewById(R.id.pressure);
         humidityTxt = findViewById(R.id.humidity);
         visibilityTxt = findViewById(R.id.visibility);
-        IdAssign(forecast,forecastTemp,forecastIcons);
-
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_CODE);
-        }
-
-        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        IdAssign(forecast, forecastTemp, forecastIcons);
 
         new weatherTask().execute();
+
+    }
+    void getLocation() {
+        try {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, (LocationListener) this);
+        }
+        catch(SecurityException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        lat = location.getLatitude();
+        lon = location.getLongitude();
+        Log.e("adasd", lat.toString());
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Toast.makeText(MainActivity.this, "Please Enable GPS and Internet", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
 
     }
     private void IdAssign(TextView[] forecast,TextView[] forecastTemp,ImageView[] forecastIcons){
