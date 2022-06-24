@@ -38,7 +38,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
+
+import com.example.weatherapp.main.AppWeather;
 
 public class MainActivity extends AppCompatActivity implements LocationListener{
 
@@ -54,12 +57,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     TextView[] forecast = new TextView[5];
     TextView[] forecastTemp = new TextView[5];
     ImageView[] forecastIcons = new ImageView[5];
+    public static AppWeather app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        app = (AppWeather) getApplication();
+
+        app.dbManager.open();
+        List<Address> list = app.dbManager.getAll();
+        for(int i = 0; i < list.size(); i++){
+            Log.e("Thanh phố" + i, list.get(i).getName() + " " + list.get(i).getLon()+ " " +list.get(i).getLat());
+        }
         DrawerLayout drawerLayout = findViewById(R.id.drawLayout);
         findViewById(R.id.imageMenu).setOnClickListener((view) -> {
             drawerLayout.openDrawer(GravityCompat.START);
@@ -84,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         new weatherTask().execute();
 
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        app.dbManager.close();
+    }
+
     void getLocation() {
         try {
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
