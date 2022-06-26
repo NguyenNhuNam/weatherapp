@@ -142,7 +142,7 @@ class AddressTask extends AsyncTask<String,Void,String>{
     protected void onPreExecute(){
     }
     protected String doInBackground(String... args){
-        String response = HttpRequest.excuteGet("https://geocode.maps.co/search?q="+args[0]);
+        String response = HttpRequest.excuteGet("https://geocode.maps.co/search?q="+args[0], null);
         if(response == null) {Log.e("response", "không có giá trị");}
         else{
             Log.e("response",response);

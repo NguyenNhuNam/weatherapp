@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.WeatherApp.AppWidget.Container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/Theme.WeatherApp.AppWidgetContainer">
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:text="Hanoi"
+        android:textSize="24dp" />
+
+    <TextView
+        android:id="@+id/temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/address"
+
+        android:fontFamily="sans-serif-thin"
+        android:text="22°C"
+        android:textSize="90dp" />
+
+    <ImageView
+        android:id="@+id/id_forecastIcon1"
+        android:layout_width="105dp"
+        android:layout_height="64dp"
+        android:layout_marginLeft="220dp"
+        android:layout_marginTop="40dp"
+        android:src="@color/white" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="117dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/id_forecastIcon1"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="220dp"
+        android:text="Clear Sky"
+        android:textSize="18dp" />
+
+
+</RelativeLayout>

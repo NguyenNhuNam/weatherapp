@@ -7,14 +7,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class HttpRequest {
-    public static String excuteGet(String targetURL) {
+    public static String excuteGet(String targetURL, String token) {
         URL url;
         HttpURLConnection connection = null;
         try {
             url = new URL(targetURL);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-
+            connection.setRequestProperty("Content-Type", "application/json");
+            if (token != null) connection.setRequestProperty("X-RapidAPI-Key", token);
             InputStream is;
             int status = connection.getResponseCode();
             if (status != HttpURLConnection.HTTP_OK)

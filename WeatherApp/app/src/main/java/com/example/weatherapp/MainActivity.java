@@ -43,7 +43,7 @@ import java.util.Locale;
 
 import com.example.weatherapp.main.AppWeather;
 
-public class MainActivity extends AppCompatActivity implements LocationListener{
+public class MainActivity extends AppCompatActivity implements LocationListener {
 
     String CITY = "Hanoi";
     String API = "b2e0f0cec21b094b6dceec04403dedd8";
@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         app = (AppWeather) getApplication();
         app.dbManager.open();
         List<Address> list = app.dbManager.getAll();
-        for(int i = 0; i < list.size(); i++){
-            Log.e("Thanh phố" + i, list.get(i).getName() + " " + list.get(i).getLon()+ " " +list.get(i).getLat());
+        for (int i = 0; i < list.size(); i++) {
+            Log.e("Thanh phố" + i, list.get(i).getName() + " " + list.get(i).getLon() + " " + list.get(i).getLat());
         }
         DrawerLayout drawerLayout = findViewById(R.id.drawLayout);
         findViewById(R.id.imageMenu).setOnClickListener((view) -> {
@@ -92,46 +92,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         visibilityTxt = findViewById(R.id.visibility);
         IdAssign(forecast, forecastTemp, forecastIcons);
 
-        new weatherTask().execute();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            System.out.println("sdfsdf");
+        } else {
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, 0, 0, this);
+            new weatherTask().execute();
+        }
 
     }
+    @Override
+    public void onLocationChanged(Location location) {
+        lat = location.getLatitude();
+        lon = location.getLongitude();
+        System.out.println(lat);
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.d("Latitude","disable");
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.d("Latitude","enable");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d("Latitude","status");
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         app.dbManager.close();
     }
 
-    void getLocation() {
-        try {
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, (LocationListener) this);
-        }
-        catch(SecurityException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        lat = location.getLatitude();
-        lon = location.getLongitude();
-        Log.e("adasd", lat.toString());
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Toast.makeText(MainActivity.this, "Please Enable GPS and Internet", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
     private void IdAssign(TextView[] forecast,TextView[] forecastTemp,ImageView[] forecastIcons){
         forecast[0]=findViewById(R.id.id_forecastDay1);
         forecast[1]=findViewById(R.id.id_forecastDay2);
@@ -189,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         }
 
         protected String doInBackground(String... args) {
-            String response = HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/onecall?lat=" + 21.0245 + "&lon=" + 105.8412 + "&units=metric&appid=" + API);
+            String response = HttpRequest.excuteGet("https://api.openweathermap.org/data/2.5/onecall?lat=" + 21.0245 + "&lon=" + 105.8412 + "&units=metric&appid=" + API, null);
             if(response == null) {Log.e("response", "không có giá trị");}
             else{
                 Log.e("response",response);
